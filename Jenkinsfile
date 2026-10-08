@@ -1,6 +1,8 @@
 pipeline {
 
-   string(
+    parameters {
+
+        string(
             name: 'IMAGE_VERSION',
             defaultValue: 'v0',
             description: 'Docker image version to build and deploy'
@@ -31,9 +33,9 @@ pipeline {
 
         stage('Build Image') {
             steps {
-                sh '''
+                sh """
                     docker build -t ${IMAGE}:${params.IMAGE_VERSION} ./app
-                '''
+                """
             }
         }
 
@@ -57,9 +59,9 @@ pipeline {
 
         stage('Push Image') {
             steps {
-                sh '''
+                sh """
                     docker push ${IMAGE}:${params.IMAGE_VERSION}
-                '''
+                """
             }
         }
 
@@ -73,10 +75,10 @@ pipeline {
 
         stage('Update Image') {
             steps {
-                sh '''
+                sh """
                     kubectl set image deployment/static-deployment \
                         static=${IMAGE}:${params.IMAGE_VERSION}
-                '''
+                """
             }
         }
 
@@ -91,6 +93,7 @@ pipeline {
     }
 
     post {
+
         success {
             echo "Deployment successful: ${IMAGE}:${params.IMAGE_VERSION}"
         }
