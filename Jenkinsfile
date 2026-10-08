@@ -1,6 +1,7 @@
 pipeline {
 
     parameters {
+
         string(
             name: 'IMAGE_VERSION',
             defaultValue: 'v0',
@@ -35,7 +36,9 @@ pipeline {
         stage('Build Image') {
             steps {
                 sh """
-                    docker build -t ${IMAGE}:${IMAGE_VERSION} ./app
+                    docker build \
+                    -t ${IMAGE}:${IMAGE_VERSION} \
+                    ./app
                 """
             }
         }
@@ -94,6 +97,7 @@ pipeline {
     }
 
     post {
+
         success {
             echo "Deployment successful: ${IMAGE}:${IMAGE_VERSION}"
         }
