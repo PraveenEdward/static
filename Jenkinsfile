@@ -1,23 +1,14 @@
 pipeline {
 
     parameters {
-
         string(
             name: 'IMAGE_VERSION',
             defaultValue: 'v0',
             description: 'Docker image version to build and deploy'
         )
-
-        choice(
-            name: 'JENKINS_SERVER',
-            choices: ['built-in'],
-            description: 'Select Jenkins server/agent'
-        )
     }
 
-    agent {
-        label "${params.JENKINS_SERVER}"
-    }
+    agent any
 
     environment {
         IMAGE = "praveenedward/static"
@@ -93,7 +84,6 @@ pipeline {
     }
 
     post {
-
         success {
             echo "Deployment successful: ${IMAGE}:${params.IMAGE_VERSION}"
         }
