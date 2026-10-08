@@ -6,9 +6,19 @@ pipeline {
             defaultValue: 'v0',
             description: 'Docker image version to build and deploy'
         )
+
+        choice(
+            name: 'AGENT',
+            choices: [
+                'built-in'
+            ],
+            description: 'Select Jenkins agent'
+        )
     }
 
-    agent any
+    agent {
+        label "${params.AGENT}"
+    }
 
     environment {
         IMAGE = "praveenedward/static"
@@ -25,7 +35,7 @@ pipeline {
         stage('Build Image') {
             steps {
                 sh """
-                    docker build -t ${IMAGE}:${params.IMAGE_VERSION} ./app
+                    docker build -t ${IMAGE}:${IMAGE_VERSION} ./app
                 """
             }
         }
@@ -51,7 +61,7 @@ pipeline {
         stage('Push Image') {
             steps {
                 sh """
-                    docker push ${IMAGE}:${params.IMAGE_VERSION}
+                    docker push ${IMAGE}:${IMAGE_VERSION}
                 """
             }
         }
@@ -68,7 +78,7 @@ pipeline {
             steps {
                 sh """
                     kubectl set image deployment/static-deployment \
-                        static=${IMAGE}:${params.IMAGE_VERSION}
+                        static=${IMAGE}:${IMAGE_VERSION}
                 """
             }
         }
@@ -85,7 +95,7 @@ pipeline {
 
     post {
         success {
-            echo "Deployment successful: ${IMAGE}:${params.IMAGE_VERSION}"
+            echo "Deployment successful: ${IMAGE}:${IMAGE_VERSION}"
         }
 
         failure {
